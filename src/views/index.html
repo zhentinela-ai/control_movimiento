@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Control de Velocidad</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="header">
+      <div class="left">
+        <img src="../static/logo.png" alt="logoUD" />
+      </div>
+      <div class="right">
+        <h1>Control de Movimiento</h1>
+      </div>
+    </div>
+    <div class="box">
+      <form>
+        <div class="controlVelocity">
+          <button class="btn" id="subtract">sub</button>
+          <div class="velocity" style="--clr: #6eff3e">
+            <div class="velocity-value">
+              <span>100</span>
+            </div>
+            <div class="field">
+              <div class="value left">0</div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value="0"
+                step="10"
+                id="velocity"
+              />
+              <div class="value right">100</div>
+            </div>
+          </div>
+          <button class="btn" id="add">add</button>
+        </div>
+        <div class="buttons">
+          <a href="#" style="--clr: #1e9bff" id="izq"
+            ><span>izquierda</span><i></i
+          ></a>
+          <a href="#" style="--clr: #ff1867" id="der"
+            ><span>derecha</span><i></i
+          ></a>
+        </div>
+        <span id="conn">Conexión cerrada</span>
+        <h4>Serial Monitor</h4>
+        <div class="serialMonitor">
+          <span id="receive"></span>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      const inputSlider = document.querySelector("input");
+
+      inputSlider.onblur = () => {
+        velocityValue.classList.remove("show");
+      };
+    </script>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
