@@ -17,34 +17,43 @@
       </div>
     </div>
     <div class="box">
-      <form>
+      <form id="control">
         <div class="controlVelocity">
-          <button class="btn" id="subtract">sub</button>
           <div class="velocity" style="--clr: #6eff3e">
-            <div class="velocity-value">
-              <span>100</span>
-            </div>
             <div class="field">
-              <div class="value left">0</div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value="0"
-                step="10"
-                id="velocity"
-              />
-              <div class="value right">100</div>
+              <div class="inputField">
+                <span>Posición</span>
+                <input
+                  type="number"
+                  required
+                  autofocus
+                  name="position"
+                  id="position"
+                  class="inputValues position"
+                  min="0"
+                  max="890"
+                  step="0.1"
+                />
+                <span>mm</span>
+              </div>
+              <div class="inputField">
+                <span>Velocidad</span>
+                <input
+                  type="number"
+                  required
+                  id="rpm"
+                  class="inputValues rpm"
+                  min="0"
+                  max="255"
+                />
+                <span>rpm</span>
+              </div>
             </div>
           </div>
-          <button class="btn" id="add">add</button>
         </div>
         <div class="buttons">
-          <a href="#" style="--clr: #1e9bff" id="izq"
-            ><span>izquierda</span><i></i
-          ></a>
-          <a href="#" style="--clr: #ff1867" id="der"
-            ><span>derecha</span><i></i
+          <a href="#" style="--clr: #1e9bff"
+            ><span><input type="submit" id="send" value="Enviar" /></span><i></i
           ></a>
         </div>
         <span id="conn">Conexión cerrada</span>
@@ -56,11 +65,52 @@
     </div>
 
     <script>
-      const inputSlider = document.querySelector("input");
+      const inputValues = document.querySelectorAll(".inputValues");
+      const errorMessage = document.createElement("div");
+      errorMessage.classList = "toast";
+      document.body.appendChild(errorMessage);
 
-      inputSlider.onblur = () => {
-        velocityValue.classList.remove("show");
-      };
+      let position = inputValues[0];
+      position.addEventListener("input", (e) => {
+        if (e.target.value > 820 || e.target.value < 0) {
+          position.style.boxShadow = `0 0 25px #ff1867`;
+          errorMessage.textContent =
+            "Valor invalido, el máximo valor de posición es: 820mm";
+          errorMessage.style.position = "fixed";
+          errorMessage.style.right = "250px";
+          setTimeout(() => {
+            e.target.value = "";
+            position.style.boxShadow = `none`;
+            setTimeout(() => {
+              errorMessage.style.right = "-300px";
+            }, 3000);
+          }, 500);
+        } else if (e.target.value >= 0) {
+          position.style.boxShadow = `0 0 25px #1e9bff`;
+          errorMessage.textContent = "";
+          errorMessage.style.right = "-300px";
+        }
+      });
+
+      let rpm = inputValues[1];
+      rpm.addEventListener("input", (e) => {
+        if (e.target.value > 120 || e.target.value < 0) {
+          rpm.style.boxShadow = `0 0 25px #ff1867`;
+          errorMessage.textContent =
+            "Valor invalido, el máximo valor de velocidad es: 120rpm";
+          errorMessage.style.position = "fixed";
+          errorMessage.style.right = "250px";
+          setTimeout(() => {
+            e.target.value = "";
+            rpm.style.boxShadow = `none`;
+            setTimeout(() => {
+              errorMessage.style.right = "-300px";
+            }, 3000);
+          }, 500);
+        } else if (e.target.value >= 0) {
+          rpm.style.boxShadow = `0 0 25px #1e9bff`;
+        }
+      });
     </script>
 
     <script src="./app.js"></script>

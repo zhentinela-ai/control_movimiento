@@ -1,99 +1,75 @@
 const { SerialPort } = require("serialport");
-const { ipcRenderer } = require("electron");
 const { ReadlineParser } = require("@serialport/parser-readline");
+// const { ipcRenderer } = require("electron");
 
-const port = new SerialPort({
-  path: "COM3",
-  baudRate: 9600,
-});
+// ipcRenderer.on("data-from-server", (event, arg) => {
+//   console.log(typeof arg);
+// });
+
+const port = new SerialPort(
+  {
+    path: "COM4",
+    baudRate: 115200,
+  },
+  (err) => {
+    if (err) return console.log("Error al abrir el puerto: ", err.message);
+  }
+);
 
 const parser = port.pipe(new ReadlineParser({ delimiter: "\n\r" }));
+const receive = document.getElementById("receive");
 
-parser.on("data", (data) => {
-  const receive = document.getElementById("receive");
-  receive.innerHTML = data;
-  console.log(data);
+window.addEventListener("beforeunload", () => {
+  port.close((err) => {
+    if (err) return console.log("Error al cerrar el puerto: ", err.message);
+  });
 });
 
-ipcRenderer.on("data-from-server", (event, arg) => {
-  // console.log(typeof arg);
+let stringToSend;
+let positionValuePrevious = "";
+window.addEventListener("load", () => {
+  const conn = document.getElementById("conn");
+  port.open(() => {
+    port.write("000p000");
+    conn.innerHTML = "Conexión abierta";
+
+    setTimeout(() => {
+      parser.on("data", (data) => {
+        receive.innerHTML = data;
+        console.log(data);
+      });
+    }, 200);
+  });
 });
 
-const conn = document.getElementById("conn");
-port.open(() => {
-  port.write("-");
-  conn.innerHTML = "Conexión abierta";
-});
+const control = document.getElementById("control");
+control.addEventListener("submit", (e) => {
+  let positionValue = position.value;
+  let rpmValue = rpm.value;
 
-const izq = document.getElementById("izq");
-izq.addEventListener("click", () => {
-  ipcRenderer.send("direct", "izq");
-  port.write("d");
-});
+  positionValuePrevious = receive.innerHTML.split(":")[2].trim();
+  console.log(positionValuePrevious);
+  e.preventDefault();
 
-const der = document.getElementById("der");
-der.addEventListener("click", () => {
-  ipcRenderer.send("direct", "der");
-  port.write("i");
-});
+  if (positionValue.length == 1) positionValue = "00" + positionValue;
+  if (rpmValue.length == 1) rpmValue = "00" + rpmValue;
+  if (positionValue.length == 2) positionValue = "0" + positionValue;
+  if (rpmValue.length == 2) rpmValue = "0" + rpmValue;
 
-const slider = document.getElementById("velocity");
-const velocityValue = document.querySelector("span");
-let lastNum = 0;
-slider.oninput = (e) => {
-  let value = e.target.value;
-  // let velocity = slider.value / 10 - 1;
-  // velocity = velocity.toFixed(0);
-  // if (velocity >= 0) port.write(velocity);
-  // else port.write("-");
+  if (positionValuePrevious - positionValue > 0)
+    stringToSend = rpmValue + "i" + positionValue;
+  else if (positionValuePrevious - positionValue < 0)
+    stringToSend = rpmValue + "d" + positionValue;
+  else stringToSend = rpmValue + "p" + positionValue;
 
-  if (lastNum < value) {
-    port.write("s");
-    console.log("increasing");
-  } else {
-    port.write("w");
-    console.log("decreasing");
-  }
-  lastNum = value;
-
-  value = slider.value;
-  value = parseInt(value);
-  velocityValue.textContent = value + "%";
-  velocityValue.style.left = value + "%";
-  velocityValue.classList.add("show");
-};
-
-let add = document.getElementById("add");
-add.addEventListener("click", () => {
-  let actValue = parseInt(slider.value);
-  port.write("w");
-  if (actValue < 100) {
-    actValue += 10;
-    slider.value = actValue.toString();
-    console.log(actValue);
-  }
-  
-  let value = actValue;
-  value = parseInt(value);
-  velocityValue.textContent = value + "%";
-  velocityValue.style.left = value + "%";
-  velocityValue.classList.add("show");
-});
-
-document.getElementById("subtract").addEventListener("click", () => {
-  let actValue = parseInt(slider.value);
-  if (actValue > 0) {
-    port.write("s");
-    actValue -= 10;
-    slider.value = actValue.toString();
-    console.log(actValue);
-  }
-
-  let value = actValue;
-  value = parseInt(value);
-  velocityValue.textContent = value + "%";
-  velocityValue.style.left = value + "%";
-  velocityValue.classList.add("show");
+  if (
+    positionValue < 821 &&
+    positionValue > -1 &&
+    rpmValue < 121 &&
+    rpmValue > -1
+  )
+    port.write(stringToSend);
+  console.log(stringToSend);
 });
 
 port.on("error", (err) => {
