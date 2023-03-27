@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gráfica</title>
+    <link rel="stylesheet" href="./index.css" />
+  </head>
+  <body>
+    <div class="header">
+      <div class="left">
+        <img src="../static/logo.png" alt="logoUD" />
+      </div>
+      <div class="right">
+        <h1>Control de Movimiento</h1>
+        <p>Rampa de aceleración</p>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="./index.html">principal</a></li>
+          <li><a href="./plot.html">gráfica</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div>
+      <canvas id="myChart" width="800px" height="400px"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const ctx = document.getElementById("myChart");
+
+      const myChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          datasets: [
+            {
+              label: "Rampa",
+              borderColor: ["white"],
+              borderWidth: 2.5,
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+
+      const show = (data) => {
+        myChart.data["datasets"][0].data.push(data.rpm);
+        myChart.data["labels"].push(data.time.toString());
+        // console.log(data)
+        myChart.update();
+      };
+
+      // const x = Array.from({ length: 100 }, (_, i) => i + 1);
+      // const y = x.map((x) => 226.8 * Math.pow(x, -0.94));
+
+      // let data = [];
+      // y.map((element, i) => {
+      //   data.push({ time: i, rpm: element });
+      // });
+
+      i = 1;
+      setInterval(() => {
+        if (i < dataJson.length) {
+          show(dataJson[i]);
+          i++;
+        }
+      }, 100);
+    </script>
+    <script src="./plot.js"></script>
+  </body>
+</html>
