@@ -14,7 +14,26 @@
       </div>
       <div class="right">
         <h1>Control de Movimiento</h1>
+        <p>Rampa de aceleración</p>
       </div>
+      <nav>
+        <ul>
+          <li>
+            <a
+              href="./index.html"
+              onclick="history.pushState(null, '', './index.html')"
+              >principal</a
+            >
+          </li>
+          <li>
+            <a
+              href="./plot.html"
+              onclick="history.pushState(null, '', './plot.html')"
+              >gráfica</a
+            >
+          </li>
+        </ul>
+      </nav>
     </div>
     <div class="box">
       <form id="control">
@@ -22,31 +41,42 @@
           <div class="velocity" style="--clr: #6eff3e">
             <div class="field">
               <div class="inputField">
-                <span>Posición</span>
+                <span>RPM</span>
                 <input
                   type="number"
                   required
                   autofocus
-                  name="position"
-                  id="position"
-                  class="inputValues position"
+                  name="rpm"
+                  id="rpm"
+                  class="inputValues time"
                   min="0"
-                  max="890"
+                  max="120"
                   step="0.1"
+                  placeholder="Velocidad"
                 />
-                <span>mm</span>
+                <span>rpm</span>
               </div>
               <div class="inputField">
-                <span>Velocidad</span>
+                <span>TIME</span>
                 <input
                   type="number"
                   required
-                  id="rpm"
+                  name="time"
+                  id="time"
                   class="inputValues rpm"
                   min="0"
-                  max="255"
+                  max="100"
+                  placeholder="Tiempo"
                 />
-                <span>rpm</span>
+                <span>seg</span>
+              </div>
+              <div class="turn">
+                <input type="radio" name="direction" id="left" />
+                <label for="left">left</label>
+                <input type="radio" name="direction" id="center" />
+                <!-- <label for="center">off</label> -->
+                <input type="radio" name="direction" id="right" />
+                <label for="right">right</label>
               </div>
             </div>
           </div>
@@ -70,35 +100,36 @@
       errorMessage.classList = "toast";
       document.body.appendChild(errorMessage);
 
-      let position = inputValues[0];
-      position.addEventListener("input", (e) => {
-        if (e.target.value > 820 || e.target.value < 0) {
-          position.style.boxShadow = `0 0 25px #ff1867`;
+      let time = inputValues[1];
+      time.addEventListener("input", (e) => {
+        if (e.target.value === 99.99) time.setAttribute("value", "100");
+        if (e.target.value > 101 || e.target.value < 0) {
+          time.style.boxShadow = `0 0 25px #ff1867`;
           errorMessage.textContent =
-            "Valor invalido, el máximo valor de posición es: 820mm";
-          errorMessage.style.position = "fixed";
+            "¡Valor invalido!, el máximo valor de tiempo es: 100seg";
+          errorMessage.style.time = "fixed";
           errorMessage.style.right = "250px";
           setTimeout(() => {
             e.target.value = "";
-            position.style.boxShadow = `none`;
+            time.style.boxShadow = `none`;
             setTimeout(() => {
               errorMessage.style.right = "-300px";
             }, 3000);
           }, 500);
         } else if (e.target.value >= 0) {
-          position.style.boxShadow = `0 0 25px #1e9bff`;
+          time.style.boxShadow = `0 0 25px #1e9bff`;
           errorMessage.textContent = "";
           errorMessage.style.right = "-300px";
         }
       });
 
-      let rpm = inputValues[1];
+      let rpm = inputValues[0];
       rpm.addEventListener("input", (e) => {
         if (e.target.value > 120 || e.target.value < 0) {
           rpm.style.boxShadow = `0 0 25px #ff1867`;
           errorMessage.textContent =
             "Valor invalido, el máximo valor de velocidad es: 120rpm";
-          errorMessage.style.position = "fixed";
+          errorMessage.style.time = "fixed";
           errorMessage.style.right = "250px";
           setTimeout(() => {
             e.target.value = "";

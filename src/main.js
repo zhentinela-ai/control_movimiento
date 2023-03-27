@@ -1,4 +1,4 @@
-const { BrowserWindow, ipcMain } = require("electron");
+const { BrowserWindow, ipcMain, app } = require("electron");
 
 let mainWindow;
 
@@ -22,14 +22,12 @@ function createWindow() {
 
   mainWindow.loadFile("src/views/index.html");
 
-  mainWindow.webContents.on("did-finish-load", () => {
-    console.log("did-finish-load");
-    mainWindow.webContents.send("data-from-server", { 'func': 'turnLeft' });
+  app.whenReady().then(() => {
+    mainWindow.webContents.on("did-finish-load", () => {
+      console.log("did-finish-load");
+      mainWindow.webContents.send("data-from-server", { func: "turnLeft" });
+    });
   });
-
-  ipcMain.on("direct", (event, data) => {
-    console.log(data);
-  })
 }
 
 module.exports = {
